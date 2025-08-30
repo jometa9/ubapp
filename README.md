@@ -38,7 +38,7 @@ UnplugBlock will instantly block your Mac when your charger is unplugged keeping
 
 5. Enjoy
 
-[![Download DMG](https://img.shields.io/badge/Download-DMG-blue?style=for-the-badge&logo=apple)](https://github.com/joaquinmetayer/ubapp/releases/latest/download/UnplugBlock.dmg)
+[![Download DMG](https://img.shields.io/badge/Download-DMG-blue?style=for-the-badge&logo=apple)](https://github.com/joaquinmetayer/ubapp/raw/main/UnplugBlock.dmg)
 
 Simple and secure. Free forever.
 
