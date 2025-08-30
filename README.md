@@ -1,0 +1,1 @@
+rm -f UnplugBlock.dmg && ./build-dmg-pro-real.sh
