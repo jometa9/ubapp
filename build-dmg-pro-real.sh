@@ -47,21 +47,51 @@ IMAGE_HEIGHT=$(echo "$IMAGE_INFO" | tail -1)
 echo "Current image: ${IMAGE_WIDTH}x${IMAGE_HEIGHT}"
 echo "Required size: ${WINDOW_WIDTH}x${WINDOW_HEIGHT}"
 
-# Always resize the image to ensure it fits perfectly
-echo "Resizing image to match DMG window dimensions exactly..."
-sips -z $WINDOW_HEIGHT $WINDOW_WIDTH assets/dmg.png --out assets/dmg_resized.png
-mv assets/dmg_resized.png assets/dmg.png
-echo "Image resized to ${WINDOW_WIDTH}x${WINDOW_HEIGHT}"
+# Check if image needs processing (only if dimensions don't match or has alpha channel)
+echo "Checking if image needs processing..."
+NEEDS_PROCESSING=false
 
-# Convert to RGB format (remove alpha channel) and fix DPI for better compatibility
-echo "Converting image to RGB format and fixing DPI for better compatibility..."
-python3 << EOF
+# Check dimensions
+if [ "$IMAGE_WIDTH" != "$WINDOW_WIDTH" ] || [ "$IMAGE_HEIGHT" != "$WINDOW_HEIGHT" ]; then
+    echo "Image dimensions don't match, needs resizing"
+    NEEDS_PROCESSING=true
+fi
+
+# Check if has alpha channel
+if sips -g hasAlpha assets/dmg.png 2>/dev/null | grep -q "yes"; then
+    echo "Image has alpha channel, needs conversion"
+    NEEDS_PROCESSING=true
+fi
+
+# Check DPI
+CURRENT_DPI=$(sips -g dpiWidth assets/dmg.png 2>/dev/null | grep dpiWidth | awk '{print $2}')
+if [ "$CURRENT_DPI" != "72.000" ]; then
+    echo "Image DPI is $CURRENT_DPI, needs adjustment"
+    NEEDS_PROCESSING=true
+fi
+
+if [ "$NEEDS_PROCESSING" = true ]; then
+    echo "Processing image to optimize for DMG..."
+    
+    # Create a backup of the original
+    cp assets/dmg.png assets/dmg_original.png
+    
+    # Resize if needed
+    if [ "$IMAGE_WIDTH" != "$WINDOW_WIDTH" ] || [ "$IMAGE_HEIGHT" != "$WINDOW_HEIGHT" ]; then
+        echo "Resizing image to ${WINDOW_WIDTH}x${WINDOW_HEIGHT}..."
+        sips -z $WINDOW_HEIGHT $WINDOW_WIDTH assets/dmg.png --out assets/dmg_resized.png
+        mv assets/dmg_resized.png assets/dmg.png
+    fi
+    
+    # Convert to RGB format with better quality preservation
+    echo "Converting image to RGB format with high quality..."
+    python3 << EOF
 from PIL import Image
 
 # Open the image
 img = Image.open('assets/dmg.png')
 
-# Convert to RGB (remove alpha channel)
+# Convert to RGB (remove alpha channel) with better quality
 if img.mode in ('RGBA', 'LA', 'P'):
     # Create a white background
     background = Image.new('RGB', img.size, (255, 255, 255))
@@ -72,10 +102,13 @@ if img.mode in ('RGBA', 'LA', 'P'):
 else:
     img = img.convert('RGB')
 
-# Save with correct DPI (72 DPI is standard for web/screen)
-img.save('assets/dmg.png', 'PNG', dpi=(72, 72))
-print("Image converted to RGB format with 72 DPI")
+# Save with high quality settings
+img.save('assets/dmg.png', 'PNG', optimize=False, dpi=(72, 72))
+print("Image converted to RGB format with high quality preservation")
 EOF
+else
+    echo "Image already optimized, skipping processing ✓"
+fi
 
 # Verify the resize worked
 FINAL_INFO=$(sips -g pixelWidth -g pixelHeight assets/dmg.png 2>/dev/null | grep -E "(pixelWidth|pixelHeight)" | awk '{print $2}')
