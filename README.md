@@ -6,7 +6,7 @@ If you are a working with sensitive data in a public place, protects your data f
 
 ---
 
-<img src="assets/0830.gif" alt="UnplugBlock" class="icon" style="width: 100%;">
+<img src="assets/0830.gif" alt="UnplugBlock">
 
 ---
 ### What if someone steals your computer?
@@ -38,7 +38,9 @@ UnplugBlock will instantly block your Mac when your charger is unplugged keeping
 
 5. Enjoy
 
-[![Download DMG](https://img.shields.io/badge/Download-DMG-blue?style=for-the-badge&logo=apple)](https://github.com/joaquinmetayer/ubapp/raw/main/UnplugBlock.dmg)
+[![Download DMG](https://img.shields.io/badge/Download-DMG-blue?style=for-the-badge&logo=apple)](https://github.com/jometa9/ubapp/raw/main/UnplugBlock.dmg)
+
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/jometa9/ubapp)
 
 Simple and secure. Free forever.
 
